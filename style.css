@@ -1,1 +1,399 @@
+/* ==========================================================
+   JOLI JOLI ANALYTICS
+   Version 4.0
+   Inspired by Wolfram Alpha
+========================================================== */
 
+:root{
+
+    --bg:#f6f7f9;
+
+    --surface:#ffffff;
+
+    --surface-2:#fafafa;
+
+    --border:#e7e7e7;
+
+    --text:#111827;
+
+    --muted:#6b7280;
+
+    --primary:#d45500;
+
+    --primary-light:#fef3eb;
+
+    --success:#16a34a;
+
+    --danger:#dc2626;
+
+    --shadow:
+
+        0 10px 40px rgba(0,0,0,.05);
+
+    --radius:18px;
+
+    --transition:.25s ease;
+
+}
+
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+body{
+
+    font-family:Inter,sans-serif;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    -webkit-font-smoothing:antialiased;
+
+    text-rendering:optimizeLegibility;
+
+}
+
+img{
+
+    display:block;
+
+    max-width:100%;
+
+}
+
+button,
+
+input{
+
+    font-family:inherit;
+
+}
+
+/* ==========================================================
+   LAYOUT
+========================================================== */
+
+.app{
+
+    width:min(1550px,95%);
+
+    margin:auto;
+
+    padding:45px 0;
+
+}
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.topbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+    margin-bottom:45px;
+
+}
+
+.topbar h1{
+
+    font-size:42px;
+
+    font-weight:800;
+
+    letter-spacing:-2px;
+
+}
+
+.topbar p{
+
+    margin-top:8px;
+
+    color:var(--muted);
+
+}
+
+.api-status{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    color:var(--muted);
+
+    font-size:14px;
+
+}
+
+.dot{
+
+    width:11px;
+
+    height:11px;
+
+    border-radius:50%;
+
+    background:var(--success);
+
+    animation:pulse 2s infinite;
+
+}
+
+@keyframes pulse{
+
+0%{
+
+transform:scale(1);
+
+opacity:1;
+
+}
+
+50%{
+
+transform:scale(1.35);
+
+opacity:.35;
+
+}
+
+100%{
+
+transform:scale(1);
+
+opacity:1;
+
+}
+
+}
+
+/* ==========================================================
+   FILTERS
+========================================================== */
+
+.filters{
+
+    display:grid;
+
+    grid-template-columns:
+
+        180px
+
+        180px
+
+        1fr
+
+        auto
+
+        auto
+
+        auto;
+
+    gap:18px;
+
+    background:white;
+
+    border-radius:22px;
+
+    padding:25px;
+
+    box-shadow:var(--shadow);
+
+    border:1px solid var(--border);
+
+}
+
+.field{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.field label{
+
+    margin-bottom:8px;
+
+    font-size:12px;
+
+    text-transform:uppercase;
+
+    color:var(--muted);
+
+    letter-spacing:.08em;
+
+}
+
+.field input{
+
+    height:48px;
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    padding:0 14px;
+
+    transition:var(--transition);
+
+    background:white;
+
+}
+
+.field input:focus{
+
+    outline:none;
+
+    border-color:var(--primary);
+
+}
+
+.grow{
+
+    width:100%;
+
+}
+
+/* ==========================================================
+   BUTTONS
+========================================================== */
+
+button{
+
+    height:48px;
+
+    padding:0 24px;
+
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    transition:var(--transition);
+
+    font-weight:600;
+
+}
+
+#btnConsultar{
+
+    background:var(--primary);
+
+    color:white;
+
+}
+
+#btnConsultar:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+
+        0 10px 20px rgba(212,85,0,.25);
+
+}
+
+#btnPDF,
+
+#btnExcel{
+
+    background:white;
+
+    border:1px solid var(--border);
+
+}
+
+#btnPDF:hover,
+
+#btnExcel:hover{
+
+    background:#fafafa;
+
+}
+
+/* ==========================================================
+   KPI CARDS
+========================================================== */
+
+.cards{
+
+    margin-top:35px;
+
+    display:grid;
+
+    grid-template-columns:
+
+        repeat(6,1fr);
+
+    gap:20px;
+
+}
+
+.card{
+
+    background:white;
+
+    border-radius:20px;
+
+    padding:26px;
+
+    border:1px solid var(--border);
+
+    transition:var(--transition);
+
+}
+
+.card:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:var(--shadow);
+
+}
+
+.card span{
+
+    display:block;
+
+    font-size:12px;
+
+    color:var(--muted);
+
+    text-transform:uppercase;
+
+    letter-spacing:.08em;
+
+}
+
+.card h2{
+
+    margin-top:15px;
+
+    font-size:42px;
+
+    font-weight:700;
+
+    letter-spacing:-2px;
+
+}
