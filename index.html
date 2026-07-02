@@ -3,28 +3,31 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>JOLI JOLI ANALYTICS</title>
+<title>JOLI JOLI ANALYTICS</title>
 
-    <meta name="theme-color"
-          content="#ffffff">
+<meta
+name="theme-color"
+content="#ffffff">
 
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
+<link rel="preconnect"
+      href="https://fonts.googleapis.com">
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+<link rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet">
 
-    <link rel="stylesheet"
-          href="style.css">
+<link rel="stylesheet"
+      href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -32,111 +35,112 @@
 
 <div class="app">
 
-<!-- ===================================================== -->
-
 <header class="topbar">
 
-    <div>
+<div class="brand">
 
-        <h1>
+<h1>
 
-            JOLI JOLI ANALYTICS
+JOLI JOLI ANALYTICS
 
-        </h1>
+</h1>
 
-        <p>
+<p>
 
-            Live Sales Intelligence
+Live Sales Intelligence
 
-        </p>
+</p>
 
-    </div>
+</div>
 
-    <div class="api-status">
+<div class="status">
 
-        <span class="dot"></span>
+<div class="status-dot"></div>
 
-        <span id="apiStatus">
+<div>
 
-            API Conectada
+<span>
 
-        </span>
+API
 
-    </div>
+</span>
+
+<strong id="apiStatus">
+
+Conectando...
+
+</strong>
+
+</div>
+
+</div>
 
 </header>
 
-<!-- ===================================================== -->
+<section class="toolbar">
 
-<section class="filters">
+<div class="field">
 
-    <div class="field">
+<label>
 
-        <label>
+Desde
 
-            Fecha inicio
+</label>
 
-        </label>
+<input
+type="date"
+id="fechaInicio">
 
-        <input
-            type="date"
-            id="fechaInicio">
+</div>
 
-    </div>
+<div class="field">
 
-    <div class="field">
+<label>
 
-        <label>
+Hasta
 
-            Fecha final
+</label>
 
-        </label>
+<input
+type="date"
+id="fechaFin">
 
-        <input
-            type="date"
-            id="fechaFinal">
+</div>
 
-    </div>
+<div class="field grow">
 
-    <div class="field grow">
+<label>
 
-        <label>
+Buscar
 
-            Buscar
+</label>
 
-        </label>
+<input
+type="text"
+id="buscar"
+placeholder="Asesora, promoción, turno...">
 
-        <input
+</div>
 
-            id="buscar"
+<button id="btnConsultar">
 
-            placeholder="Ej. Tatiana, Noche, Promoción..."
+Consultar
 
-        >
+</button>
 
-    </div>
+<button id="btnPDF">
 
-    <button id="btnConsultar">
+PDF
 
-        Consultar
+</button>
 
-    </button>
+<button id="btnExcel">
 
-    <button id="btnPDF">
+Excel
 
-        PDF
-
-    </button>
-
-    <button id="btnExcel">
-
-        Excel
-
-    </button>
+</button>
 
 </section>
-
-<!-- ===================================================== -->
 
 <section class="cards">
 
@@ -144,11 +148,11 @@
 
 <span>
 
-CAJA
+Caja
 
 </span>
 
-<h2 id="lblCaja">
+<h2 id="kpiCaja">
 
 S/0
 
@@ -160,11 +164,11 @@ S/0
 
 <span>
 
-TOTAL PARES
+Pares
 
 </span>
 
-<h2 id="lblPares">
+<h2 id="kpiPares">
 
 0
 
@@ -176,11 +180,11 @@ TOTAL PARES
 
 <span>
 
-LIVES
+Lives
 
 </span>
 
-<h2 id="lblLives">
+<h2 id="kpiLives">
 
 0
 
@@ -192,27 +196,11 @@ LIVES
 
 <span>
 
-ASESORAS
+Ticket
 
 </span>
 
-<h2 id="lblAsesoras">
-
-0
-
-</h2>
-
-</div>
-
-<div class="card">
-
-<span>
-
-TICKET PROMEDIO
-
-</span>
-
-<h2 id="lblTicket">
+<h2 id="kpiTicket">
 
 S/0
 
@@ -224,11 +212,11 @@ S/0
 
 <span>
 
-HORAS LIVE
+Horas Live
 
 </span>
 
-<h2 id="lblHoras">
+<h2 id="kpiHoras">
 
 0 h
 
@@ -236,13 +224,29 @@ HORAS LIVE
 
 </div>
 
+<div class="card">
+
+<span>
+
+Asesoras
+
+</span>
+
+<h2 id="kpiAsesoras">
+
+0
+
+</h2>
+
+</div>
+
 </section>
 
-<!-- ===================================================== -->
+<section class="grid">
 
-<section class="dashboard">
+<div class="panel panel-wide">
 
-<div class="panel large">
+<div class="panel-header">
 
 <h3>
 
@@ -250,11 +254,15 @@ Caja por día
 
 </h3>
 
+</div>
+
 <canvas id="chartCaja"></canvas>
 
 </div>
 
 <div class="panel">
+
+<div class="panel-header">
 
 <h3>
 
@@ -262,11 +270,15 @@ Pares por origen
 
 </h3>
 
+</div>
+
 <canvas id="chartOrigen"></canvas>
 
 </div>
 
 <div class="panel">
+
+<div class="panel-header">
 
 <h3>
 
@@ -274,11 +286,15 @@ Ranking Asesoras
 
 </h3>
 
+</div>
+
 <canvas id="chartAsesoras"></canvas>
 
 </div>
 
 <div class="panel">
+
+<div class="panel-header">
 
 <h3>
 
@@ -286,33 +302,33 @@ Promociones
 
 </h3>
 
-<canvas id="chartPromo"></canvas>
+</div>
+
+<canvas id="chartPromociones"></canvas>
 
 </div>
 
 </section>
 
-<!-- ===================================================== -->
+<section class="table-section">
 
-<section class="table-panel">
-
-<div class="table-header">
+<div class="table-title">
 
 <h2>
 
-Detalle de ventas
+Detalle de Ventas
 
 </h2>
 
-<div id="ultimaActualizacion">
+<span id="ultimaActualizacion">
 
-Sin consultar
+Sin actualizar
+
+</span>
 
 </div>
 
-</div>
-
-<div class="table-wrapper">
+<div class="table-container">
 
 <table id="tabla">
 
@@ -352,66 +368,4 @@ Sin consultar
 
 </thead>
 
-<tbody>
-
-</tbody>
-
-<tfoot>
-
-<tr>
-
-<th colspan="2">
-
-TOTAL
-
-</th>
-
-<th id="tCaja"></th>
-
-<th id="tLive"></th>
-
-<th id="tPublicidad"></th>
-
-<th id="tRecurrentes"></th>
-
-<th id="tContenido"></th>
-
-<th id="tOtros"></th>
-
-<th id="tTotal"></th>
-
-<th></th>
-
-<th id="tLives"></th>
-
-<th colspan="3"></th>
-
-</tr>
-
-</tfoot>
-
-</table>
-
-</div>
-
-</section>
-
-<footer>
-
-JOLI JOLI ANALYTICS
-
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-<script src="app.js"></script>
-
-</body>
-
-</html>
+<tbody id="tbody">
