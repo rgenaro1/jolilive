@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Joli Joli Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+:root{--p:#123b7a;--bg:#eef2f7;--c:#fff}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,sans-serif;background:var(--bg)}
+header{background:linear-gradient(90deg,#123b7a,#2159b5);color:#fff;padding:20px}
+header h1{margin:0}
+.wrap{max-width:1500px;margin:auto;padding:20px}
+.filters,.cards,.panel{background:#fff;border-radius:14px;padding:18px;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.filters{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+input,button{padding:10px;border-radius:8px;border:1px solid #ccc}
+button{background:var(--p);color:#fff;border:none;font-weight:600;cursor:pointer}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:15px;margin:20px 0}
+.card{background:#f7f9fc;border-left:5px solid var(--p);padding:12px;border-radius:10px}
+.card h3{margin:0;font-size:13px;color:#666}
+.card div{font-size:28px;font-weight:700;margin-top:8px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse}
+th{background:var(--p);color:#fff;position:sticky;top:0}
+th,td{padding:8px;border:1px solid #ddd;font-size:12px;text-align:center}
+tbody tr:nth-child(even){background:#fafafa}
+.tablebox{margin-top:20px;background:#fff;border-radius:14px;padding:18px;overflow:auto;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+#loader{display:none;text-align:center;padding:20px;font-weight:bold}
+</style>
+</head>
+<body>
+<header><h1>JOLI JOLI LIVE DASHBOARD</h1><div>Versión 2.0</div></header>
+
+<div class="wrap">
+<div class="filters">
+<div><label>Fecha inicio</label><br><input type="date" id="fi"></div>
+<div><label>Fecha fin</label><br><input type="date" id="ff"></div>
+<button onclick="consultar()">Consultar</button>
+<button onclick="pdf()">PDF</button>
+<button onclick="excel()">Excel</button>
+<input id="buscar" placeholder="Buscar..." oninput="filtrar()">
+</div>
+
+<div id="loader">Consultando información...</div>
+
+<div class="cards">
+<div class="card"><h3>Caja Total</h3><div id="caja">S/0</div></div>
+<div class="card"><h3>Total Pares</h3><div id="pares">0</div></div>
+<div class="card"><h3>Lives</h3><div id="lives">0</div></div>
+<div class="card"><h3>Asesoras</h3><div id="asesoras">0</div></div>
+</div>
+
+<div class="grid">
+<div class="panel"><canvas id="g1"></canvas></div>
+<div class="panel"><canvas id="g2"></canvas></div>
+</div>
+
+<div class="tablebox">
+<table id="tabla">
+<thead><tr>
+<th>Fecha</th><th>Turno</th><th>Caja</th><th>Live</th><th>Publicidad</th><th>Recurrentes</th><th>Contenido</th><th>Otros</th><th>Total</th><th>Terminó</th><th>Lives</th><th>Asesora</th>
+</tr></thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+
+<script>
+const API_URL="PEGA_AQUI_LA_URL_DEL_APPS_SCRIPT";
+let data=[],view=[],c1,c2;
+
+async function consultar(){
+loader.style.display="block";
+const r=await fetch(API_URL);
+data=await r.json();
+loader.style.display="none";
+const d1=fi.value,d2=ff.value;
+view=data.filter(x=>(!d1||x.fecha>=d1)&&(!d2||x.fecha<=d2));
+render();
+}
+
+function render(){
+let caja=0,pares=0,lives=0,s=new Set();
+const tb=document.querySelector("#tabla tbody");
+tb.innerHTML="";
+const dias={},turnos={"Día":0,"Noche":0};
+view.forEach(x=>{
+caja+=+x.caja||0; pares+=+x.totalPares||0; lives+=+x.cantidadLives||0;
+if(x.asesoraVenta)s.add(x.asesoraVenta);
+dias[x.fecha]=(dias[x.fecha]||0)+(+x.caja||0);
+turnos[x.turno]=(turnos[x.turno]||0)+(+x.totalPares||0);
+tb.insertAdjacentHTML("beforeend",`<tr>
+<td>${x.fecha}</td><td>${x.turno}</td><td>${x.caja}</td><td>${x.paresLive}</td><td>${x.paresPublicidad}</td>
+<td>${x.paresRecurrentes}</td><td>${x.paresContenido}</td><td>${x.otros}</td>
+<td>${x.totalPares}</td><td>${x.terminoPagar}</td><td>${x.cantidadLives}</td><td>${x.asesoraVenta}</td>
+</tr>`);
+});
+caja.innerHTML="";
+document.getElementById("caja").textContent="S/ "+caja.toLocaleString();
+document.getElementById("pares").textContent=pares;
+document.getElementById("lives").textContent=lives;
+document.getElementById("asesoras").textContent=s.size;
+draw(dias,turnos);
+}
+
+function draw(dias,turnos){
+if(c1)c1.destroy(); if(c2)c2.destroy();
+c1=new Chart(g1,{type:"bar",data:{labels:Object.keys(dias),datasets:[{label:"Caja",data:Object.values(dias)}]}});
+c2=new Chart(g2,{type:"doughnut",data:{labels:Object.keys(turnos),datasets:[{data:Object.values(turnos)}]}});
+}
+
+function filtrar(){
+const t=buscar.value.toLowerCase();
+document.querySelectorAll("#tabla tbody tr").forEach(r=>{
+r.style.display=r.innerText.toLowerCase().includes(t)?"":"none";
+});
+}
+
+function pdf(){
+const {jsPDF}=window.jspdf;
+const doc=new jsPDF("l");
+doc.text("JOLI JOLI LIVE DASHBOARD",14,15);
+doc.autoTable({html:"#tabla",startY:20,styles:{fontSize:7}});
+doc.save("Reporte_JoliJoli.pdf");
+}
+
+function excel(){
+const wb=XLSX.utils.table_to_book(document.getElementById("tabla"));
+XLSX.writeFile(wb,"Reporte_JoliJoli.xlsx");
+}
+</script>
+</body>
+</html>
