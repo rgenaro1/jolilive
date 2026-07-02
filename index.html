@@ -1,544 +1,396 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportes Asesoras — Resumen por Fechas</title>
+<style>
+  :root{
+    --navy-950:#0a1120;
+    --navy-900:#0f1a2e;
+    --navy-800:#16233d;
+    --navy-700:#1e2f4d;
+    --gold-500:#d4af37;
+    --gold-400:#e6c866;
+    --live-500:#ff4d5e;
+    --live-glow:rgba(255,77,94,.35);
+    --text-hi:#f4f1e6;
+    --text-mid:#b9c3d6;
+    --text-low:#7f8ba3;
+    --ok:#3ecf8e;
+    --border:#243553;
+    --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono:'IBM Plex Mono', 'Courier New', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(212,175,55,.08), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(255,77,94,.06), transparent 55%),
+      var(--navy-950);
+    color:var(--text-hi);
+    font-family:var(--font-body);
+    min-height:100vh;
+    padding:32px 20px 80px;
+  }
+  .wrap{max-width:980px;margin:0 auto;}
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+  header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:14px;}
+  .brand .dot{
+    width:14px;height:14px;border-radius:50%;
+    background:var(--live-500);
+    box-shadow:0 0 0 4px var(--live-glow), 0 0 18px 4px var(--live-glow);
+    animation:pulse 2.2s ease-in-out infinite;
+    flex-shrink:0;
+  }
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+  .brand h1{font-family:var(--font-display);font-weight:600;font-size:26px;margin:0;letter-spacing:.2px;}
+  .brand p{margin:2px 0 0;color:var(--text-low);font-size:13px;letter-spacing:.4px;text-transform:uppercase;}
 
-<title>JOLI JOLI ANALYTICS</title>
+  .panel{
+    background:linear-gradient(180deg, var(--navy-800), var(--navy-900));
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:22px;
+    margin-bottom:24px;
+    box-shadow:0 20px 40px -20px rgba(0,0,0,.6);
+  }
+  .panel h2{
+    font-family:var(--font-display);
+    font-size:15px;font-weight:600;
+    color:var(--gold-400);
+    text-transform:uppercase;letter-spacing:1.2px;
+    margin:0 0 16px;
+  }
 
-<meta
-name="theme-color"
-content="#ffffff">
+  .controls{display:flex;flex-wrap:wrap;gap:14px;align-items:end;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:12px;color:var(--text-low);letter-spacing:.4px;text-transform:uppercase;}
+  .field input[type=date]{
+    background:var(--navy-950);
+    border:1px solid var(--border);
+    color:var(--text-hi);
+    border-radius:9px;
+    padding:10px 12px;
+    font-family:var(--font-mono);
+    font-size:14px;
+    min-width:160px;
+  }
+  .field input[type=date]:focus{outline:2px solid var(--gold-500);outline-offset:1px;}
 
-<link rel="preconnect"
-      href="https://fonts.googleapis.com">
+  .presets{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{
+    background:var(--navy-700);
+    border:1px solid var(--border);
+    color:var(--text-mid);
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:12.5px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .chip:hover{border-color:var(--gold-500);color:var(--gold-400);}
 
-<link rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin>
+  button#run{
+    background:linear-gradient(135deg, var(--gold-500), #b8912a);
+    color:var(--navy-950);
+    border:none;
+    font-weight:700;
+    padding:11px 22px;
+    border-radius:9px;
+    cursor:pointer;
+    font-size:14px;
+    letter-spacing:.3px;
+    transition:transform .12s, box-shadow .12s;
+  }
+  button#run:hover{transform:translateY(-1px);box-shadow:0 8px 18px -6px rgba(212,175,55,.45);}
+  button#run:active{transform:translateY(0);}
+  button#run:disabled{opacity:.55;cursor:progress;transform:none;box-shadow:none;}
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet">
+  .api-row{margin-top:14px;display:flex;gap:10px;align-items:center;}
+  .api-row input{
+    flex:1;
+    background:var(--navy-950);
+    border:1px solid var(--border);
+    color:var(--text-low);
+    border-radius:9px;
+    padding:8px 12px;
+    font-family:var(--font-mono);
+    font-size:12px;
+  }
+  .api-row button{
+    background:none;border:1px solid var(--border);color:var(--text-mid);
+    padding:8px 12px;border-radius:9px;font-size:12px;cursor:pointer;
+  }
+  .api-row button:hover{border-color:var(--gold-500);color:var(--gold-400);}
 
-<link rel="stylesheet"
-      href="style.css">
+  #status{font-size:13px;color:var(--text-low);margin-top:12px;min-height:18px;}
+  #status.error{color:var(--live-500);}
+  #status.ok{color:var(--ok);}
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+  .card{
+    background:var(--navy-800);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:18px;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:3px;
+    background:var(--card-accent, var(--gold-500));
+  }
+  .card .label{font-size:11.5px;color:var(--text-low);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+  .card .value{font-family:var(--font-display);font-size:30px;font-weight:600;color:var(--text-hi);line-height:1;}
+  .card .sub{font-size:12px;color:var(--text-low);margin-top:6px;}
 
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:720px){.two-col{grid-template-columns:1fr;}}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  thead th{
+    text-align:left;color:var(--text-low);font-weight:600;
+    font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    padding:8px 10px;border-bottom:1px solid var(--border);
+  }
+  tbody td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text-mid);}
+  tbody tr:hover td{background:rgba(212,175,55,.05);color:var(--text-hi);}
+  td.num, th.num{text-align:right;font-family:var(--font-mono);}
+  .turno-badge{
+    display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:600;
+  }
+  .turno-badge.Dia{background:rgba(212,175,55,.15);color:var(--gold-400);}
+  .turno-badge.Noche{background:rgba(94,120,255,.15);color:#8fa3ff;}
+
+  .empty{color:var(--text-low);font-size:13px;padding:20px;text-align:center;}
+  footer{margin-top:40px;text-align:center;color:var(--text-low);font-size:12px;}
+</style>
 </head>
-
 <body>
+<div class="wrap">
 
-<div class="app">
+  <header class="top">
+    <div class="brand">
+      <span class="dot"></span>
+      <div>
+        <h1>Reportes Asesoras</h1>
+        <p>Resumen de ventas en vivo por rango de fechas</p>
+      </div>
+    </div>
+  </header>
 
-<header class="topbar">
+  <section class="panel">
+    <h2>Rango de fechas</h2>
+    <div class="controls">
+      <div class="field">
+        <label for="start">Desde</label>
+        <input type="date" id="start">
+      </div>
+      <div class="field">
+        <label for="end">Hasta</label>
+        <input type="date" id="end">
+      </div>
+      <button id="run">Generar resumen</button>
+    </div>
+    <div class="presets" style="margin-top:14px;">
+      <span class="chip" data-preset="today">Hoy</span>
+      <span class="chip" data-preset="7">Últimos 7 días</span>
+      <span class="chip" data-preset="30">Últimos 30 días</span>
+      <span class="chip" data-preset="month">Este mes</span>
+    </div>
 
-<div class="brand">
+    <div class="api-row">
+      <input id="apiUrl" type="text" placeholder="Pega aquí la URL de tu Apps Script Web App (…/exec)">
+      <button id="saveApi">Guardar</button>
+    </div>
+    <div id="status"></div>
+  </section>
 
-<h1>
+  <section id="results" style="display:none;">
 
-JOLI JOLI ANALYTICS
+    <div class="cards" id="cards"></div>
 
-</h1>
+    <div class="two-col">
+      <div class="panel">
+        <h2>Por turno</h2>
+        <table id="turnoTable">
+          <thead><tr><th>Turno</th><th class="num">Pares</th><th class="num">Caja (S/)</th><th class="num">Horas Live</th><th class="num">Lives</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h2>Por asesora</h2>
+        <table id="asesoraTable">
+          <thead><tr><th>Asesora</th><th class="num">Pares</th><th class="num">Caja (S/)</th><th class="num">Lives</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
 
-<p>
+    <div class="panel">
+      <h2>Detalle por día</h2>
+      <table id="diaTable">
+        <thead><tr><th>Fecha</th><th>Turno</th><th class="num">Pares</th><th class="num">Caja (S/)</th><th class="num">Horas Live</th><th class="num">Lives</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
-Live Sales Intelligence
+  </section>
 
-</p>
-
+  <footer>JOLI JOLI · Reportes Asesoras · Datos leídos en vivo desde Google Sheets</footer>
 </div>
 
-<div class="status">
-
-<div class="status-dot"></div>
-
-<div>
-
-<span>
-
-API
-
-</span>
-
-<strong id="apiStatus">
-
-Conectando...
-
-</strong>
-
-</div>
-
-</div>
-
-</header>
-
-<section class="toolbar">
-
-<div class="field">
-
-<label>
-
-Desde
-
-</label>
-
-<input
-type="date"
-id="fechaInicio">
-
-</div>
-
-<div class="field">
-
-<label>
-
-Hasta
-
-</label>
-
-<input
-type="date"
-id="fechaFin">
-
-</div>
-
-<div class="field grow">
-
-<label>
-
-Buscar
-
-</label>
-
-<input
-type="text"
-id="buscar"
-placeholder="Asesora, promoción, turno...">
-
-</div>
-
-<button id="btnConsultar">
-
-Consultar
-
-</button>
-
-<button id="btnPDF">
-
-PDF
-
-</button>
-
-<button id="btnExcel">
-
-Excel
-
-</button>
-
-</section>
-
-<section class="cards">
-
-<div class="card">
-
-<span>
-
-Caja
-
-</span>
-
-<h2 id="kpiCaja">
-
-S/0
-
-</h2>
-
-</div>
-
-<div class="card">
-
-<span>
-
-Pares
-
-</span>
-
-<h2 id="kpiPares">
-
-0
-
-</h2>
-
-</div>
-
-<div class="card">
-
-<span>
-
-Lives
-
-</span>
-
-<h2 id="kpiLives">
-
-0
-
-</h2>
-
-</div>
-
-<div class="card">
-
-<span>
-
-Ticket
-
-</span>
-
-<h2 id="kpiTicket">
-
-S/0
-
-</h2>
-
-</div>
-
-<div class="card">
-
-<span>
-
-Horas Live
-
-</span>
-
-<h2 id="kpiHoras">
-
-0 h
-
-</h2>
-
-</div>
-
-<div class="card">
-
-<span>
-
-Asesoras
-
-</span>
-
-<h2 id="kpiAsesoras">
-
-0
-
-</h2>
-
-</div>
-
-</section>
-
-<section class="grid">
-
-<div class="panel panel-wide">
-
-<div class="panel-header">
-
-<h3>
-
-Caja por día
-
-</h3>
-
-</div>
-
-<canvas id="chartCaja"></canvas>
-
-</div>
-
-<div class="panel">
-
-<div class="panel-header">
-
-<h3>
-
-Pares por origen
-
-</h3>
-
-</div>
-
-<canvas id="chartOrigen"></canvas>
-
-</div>
-
-<div class="panel">
-
-<div class="panel-header">
-
-<h3>
-
-Ranking Asesoras
-
-</h3>
-
-</div>
-
-<canvas id="chartAsesoras"></canvas>
-
-</div>
-
-<div class="panel">
-
-<div class="panel-header">
-
-<h3>
-
-Promociones
-
-</h3>
-
-</div>
-
-<canvas id="chartPromociones"></canvas>
-
-</div>
-
-</section>
-
-<section class="table-section">
-
-<div class="table-title">
-
-<h2>
-
-Detalle de Ventas
-
-</h2>
-
-<span id="ultimaActualizacion">
-
-Sin actualizar
-
-</span>
-
-</div>
-
-<div class="table-container">
-
-<table id="tabla">
-
-<thead>
-
-<tr>
-
-<th>Fecha</th>
-
-<th>Turno</th>
-
-<th>Caja</th>
-
-<th>Live</th>
-
-<th>Publicidad</th>
-
-<th>Recurrentes</th>
-
-<th>Contenido</th>
-
-<th>Otros</th>
-
-<th>Total</th>
-
-<th>Terminó</th>
-
-<th>Lives</th>
-
-<th>Asesora Live</th>
-
-<th>Asesora Venta</th>
-
-<th>Promoción</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tbody">
-</tbody>
-
-<tfoot>
-
-<tr>
-
-<th colspan="2">
-
-TOTAL
-
-</th>
-
-<th id="tCaja">
-
-S/0
-
-</th>
-
-<th id="tLive">
-
-0
-
-</th>
-
-<th id="tPublicidad">
-
-0
-
-</th>
-
-<th id="tRecurrentes">
-
-0
-
-</th>
-
-<th id="tContenido">
-
-0
-
-</th>
-
-<th id="tOtros">
-
-0
-
-</th>
-
-<th id="tTotal">
-
-0
-
-</th>
-
-<th>
-
-—
-
-</th>
-
-<th id="tLives">
-
-0
-
-</th>
-
-<th colspan="3">
-
-—
-
-</th>
-
-</tr>
-
-</tfoot>
-
-</table>
-
-</div>
-
-</section>
-
-<section class="bottom-grid">
-
-<div class="panel">
-
-<div class="panel-header">
-
-<h3>
-
-Resumen por Asesora
-
-</h3>
-
-</div>
-
-<div id="rankingAsesoras">
-
-<div class="empty">
-
-Sin datos
-
-</div>
-
-</div>
-
-</div>
-
-<div class="panel">
-
-<div class="panel-header">
-
-<h3>
-
-Resumen por Promoción
-
-</h3>
-
-</div>
-
-<div id="rankingPromociones">
-
-<div class="empty">
-
-Sin datos
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-<div id="loader">
-
-<div class="spinner"></div>
-
-<p>
-
-Consultando información...
-
-</p>
-
-</div>
-
-<footer>
-
-<div>
-
-JOLI JOLI ANALYTICS
-
-</div>
-
-<div>
-
-Live Sales Intelligence Dashboard
-
-</div>
-
-</footer>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-<script src="app.js"></script>
-
+<script>
+const $ = (sel) => document.querySelector(sel);
+const statusEl = $('#status');
+const apiInput = $('#apiUrl');
+
+// Cargar URL guardada
+const savedApi = localStorage_safe_get('reportesAsesorasApiUrl');
+if (savedApi) apiInput.value = savedApi;
+
+$('#saveApi').addEventListener('click', () => {
+  localStorage_safe_set('reportesAsesorasApiUrl', apiInput.value.trim());
+  setStatus('URL guardada en este navegador.', 'ok');
+});
+
+function localStorage_safe_get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function localStorage_safe_set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+function fmtDate(d){ return d.toISOString().slice(0,10); }
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const preset = chip.dataset.preset;
+    const today = new Date();
+    let start, end = new Date(today);
+    if(preset === 'today'){ start = new Date(today); }
+    else if(preset === '7'){ start = new Date(today); start.setDate(start.getDate()-6); }
+    else if(preset === '30'){ start = new Date(today); start.setDate(start.getDate()-29); }
+    else if(preset === 'month'){ start = new Date(today.getFullYear(), today.getMonth(), 1); }
+    $('#start').value = fmtDate(start);
+    $('#end').value = fmtDate(end);
+  });
+});
+
+// Default: este mes
+(function initDefaults(){
+  const today = new Date();
+  const start = new Date(today.getFullYear(), today.getMonth(), 1);
+  $('#start').value = fmtDate(start);
+  $('#end').value = fmtDate(today);
+})();
+
+function setStatus(msg, cls){
+  statusEl.textContent = msg;
+  statusEl.className = cls || '';
+}
+
+function money(n){
+  return 'S/ ' + (n||0).toLocaleString('es-PE', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function num(n){ return (n||0).toLocaleString('es-PE'); }
+function hours(n){
+  const h = n||0;
+  const hh = Math.floor(h);
+  const mm = Math.round((h-hh)*60);
+  return `${hh}h ${mm}m`;
+}
+
+$('#run').addEventListener('click', generarResumen);
+
+async function generarResumen(){
+  const apiUrl = apiInput.value.trim();
+  const start = $('#start').value;
+  const end = $('#end').value;
+
+  if(!apiUrl){ setStatus('Primero pega y guarda la URL de tu Apps Script Web App.', 'error'); return; }
+  if(!start || !end){ setStatus('Selecciona ambas fechas.', 'error'); return; }
+  if(start > end){ setStatus('La fecha "Desde" no puede ser mayor que "Hasta".', 'error'); return; }
+
+  const btn = $('#run');
+  btn.disabled = true;
+  setStatus('Consultando datos…', '');
+  $('#results').style.display = 'none';
+
+  try{
+    const url = `${apiUrl}${apiUrl.includes('?') ? '&' : '?'}start=${start}&end=${end}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if(data.error) throw new Error(data.message || 'Error desconocido en la API');
+
+    render(data);
+    setStatus(`Listo — ${data.envios} envíos encontrados entre ${data.rango.inicio} y ${data.rango.fin}.`, 'ok');
+    $('#results').style.display = 'block';
+  }catch(err){
+    setStatus('No se pudo obtener el resumen: ' + err.message, 'error');
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+function render(data){
+  const t = data.totals;
+
+  $('#cards').innerHTML = `
+    <div class="card" style="--card-accent:var(--gold-500)">
+      <div class="label">Total Pares</div>
+      <div class="value">${num(t.pares)}</div>
+    </div>
+    <div class="card" style="--card-accent:var(--ok)">
+      <div class="label">Caja Acumulada</div>
+      <div class="value" style="font-size:24px">${money(t.caja)}</div>
+    </div>
+    <div class="card" style="--card-accent:var(--live-500)">
+      <div class="label">Horas Live</div>
+      <div class="value" style="font-size:24px">${hours(t.horasLive)}</div>
+    </div>
+    <div class="card" style="--card-accent:#8fa3ff">
+      <div class="label">Lives Realizados</div>
+      <div class="value">${num(t.lives)}</div>
+      <div class="sub">${num(t.terminoDePagar)} terminó de pagar</div>
+    </div>
+  `;
+
+  const turnoBody = $('#turnoTable tbody');
+  turnoBody.innerHTML = ['Dia','Noche'].map(turno => {
+    const d = data.porTurno[turno] || {pares:0,caja:0,horasLive:0,lives:0};
+    return `<tr>
+      <td><span class="turno-badge ${turno}">${turno === 'Dia' ? 'Día' : 'Noche'}</span></td>
+      <td class="num">${num(d.pares)}</td>
+      <td class="num">${money(d.caja)}</td>
+      <td class="num">${hours(d.horasLive)}</td>
+      <td class="num">${num(d.lives)}</td>
+    </tr>`;
+  }).join('');
+
+  const asesoraBody = $('#asesoraTable tbody');
+  asesoraBody.innerHTML = data.porAsesora.length ? data.porAsesora.map(a => `
+    <tr>
+      <td>${a.asesora}</td>
+      <td class="num">${num(a.pares)}</td>
+      <td class="num">${money(a.caja)}</td>
+      <td class="num">${num(a.lives)}</td>
+    </tr>
+  `).join('') : `<tr><td colspan="4" class="empty">Sin datos en este rango</td></tr>`;
+
+  const diaBody = $('#diaTable tbody');
+  diaBody.innerHTML = data.porDia.length ? data.porDia.map(d => `
+    <tr>
+      <td>${d.fecha}</td>
+      <td><span class="turno-badge ${d.turno}">${d.turno === 'Dia' ? 'Día' : 'Noche'}</span></td>
+      <td class="num">${num(d.pares)}</td>
+      <td class="num">${money(d.caja)}</td>
+      <td class="num">${hours(d.horasLive)}</td>
+      <td class="num">${num(d.lives)}</td>
+    </tr>
+  `).join('') : `<tr><td colspan="6" class="empty">Sin datos en este rango</td></tr>`;
+}
+</script>
 </body>
-
 </html>
