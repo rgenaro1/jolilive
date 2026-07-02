@@ -1,1 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
 
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>JOLI JOLI ANALYTICS</title>
+
+    <meta name="theme-color"
+          content="#ffffff">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="style.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- ===================================================== -->
+
+<header class="topbar">
+
+    <div>
+
+        <h1>
+
+            JOLI JOLI ANALYTICS
+
+        </h1>
+
+        <p>
+
+            Live Sales Intelligence
+
+        </p>
+
+    </div>
+
+    <div class="api-status">
+
+        <span class="dot"></span>
+
+        <span id="apiStatus">
+
+            API Conectada
+
+        </span>
+
+    </div>
+
+</header>
+
+<!-- ===================================================== -->
+
+<section class="filters">
+
+    <div class="field">
+
+        <label>
+
+            Fecha inicio
+
+        </label>
+
+        <input
+            type="date"
+            id="fechaInicio">
+
+    </div>
+
+    <div class="field">
+
+        <label>
+
+            Fecha final
+
+        </label>
+
+        <input
+            type="date"
+            id="fechaFinal">
+
+    </div>
+
+    <div class="field grow">
+
+        <label>
+
+            Buscar
+
+        </label>
+
+        <input
+
+            id="buscar"
+
+            placeholder="Ej. Tatiana, Noche, Promoción..."
+
+        >
+
+    </div>
+
+    <button id="btnConsultar">
+
+        Consultar
+
+    </button>
+
+    <button id="btnPDF">
+
+        PDF
+
+    </button>
+
+    <button id="btnExcel">
+
+        Excel
+
+    </button>
+
+</section>
+
+<!-- ===================================================== -->
+
+<section class="cards">
+
+<div class="card">
+
+<span>
+
+CAJA
+
+</span>
+
+<h2 id="lblCaja">
+
+S/0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<span>
+
+TOTAL PARES
+
+</span>
+
+<h2 id="lblPares">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<span>
+
+LIVES
+
+</span>
+
+<h2 id="lblLives">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<span>
+
+ASESORAS
+
+</span>
+
+<h2 id="lblAsesoras">
+
+0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<span>
+
+TICKET PROMEDIO
+
+</span>
+
+<h2 id="lblTicket">
+
+S/0
+
+</h2>
+
+</div>
+
+<div class="card">
+
+<span>
+
+HORAS LIVE
+
+</span>
+
+<h2 id="lblHoras">
+
+0 h
+
+</h2>
+
+</div>
+
+</section>
+
+<!-- ===================================================== -->
+
+<section class="dashboard">
+
+<div class="panel large">
+
+<h3>
+
+Caja por día
+
+</h3>
+
+<canvas id="chartCaja"></canvas>
+
+</div>
+
+<div class="panel">
+
+<h3>
+
+Pares por origen
+
+</h3>
+
+<canvas id="chartOrigen"></canvas>
+
+</div>
+
+<div class="panel">
+
+<h3>
+
+Ranking Asesoras
+
+</h3>
+
+<canvas id="chartAsesoras"></canvas>
+
+</div>
+
+<div class="panel">
+
+<h3>
+
+Promociones
+
+</h3>
+
+<canvas id="chartPromo"></canvas>
+
+</div>
+
+</section>
+
+<!-- ===================================================== -->
+
+<section class="table-panel">
+
+<div class="table-header">
+
+<h2>
+
+Detalle de ventas
+
+</h2>
+
+<div id="ultimaActualizacion">
+
+Sin consultar
+
+</div>
+
+</div>
+
+<div class="table-wrapper">
+
+<table id="tabla">
+
+<thead>
+
+<tr>
+
+<th>Fecha</th>
+
+<th>Turno</th>
+
+<th>Caja</th>
+
+<th>Live</th>
+
+<th>Publicidad</th>
+
+<th>Recurrentes</th>
+
+<th>Contenido</th>
+
+<th>Otros</th>
+
+<th>Total</th>
+
+<th>Terminó</th>
+
+<th>Lives</th>
+
+<th>Asesora Live</th>
+
+<th>Asesora Venta</th>
+
+<th>Promoción</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+</tbody>
+
+<tfoot>
+
+<tr>
+
+<th colspan="2">
+
+TOTAL
+
+</th>
+
+<th id="tCaja"></th>
+
+<th id="tLive"></th>
+
+<th id="tPublicidad"></th>
+
+<th id="tRecurrentes"></th>
+
+<th id="tContenido"></th>
+
+<th id="tOtros"></th>
+
+<th id="tTotal"></th>
+
+<th></th>
+
+<th id="tLives"></th>
+
+<th colspan="3"></th>
+
+</tr>
+
+</tfoot>
+
+</table>
+
+</div>
+
+</section>
+
+<footer>
+
+JOLI JOLI ANALYTICS
+
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
